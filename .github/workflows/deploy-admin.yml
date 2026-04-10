@@ -100,4 +100,4 @@ jobs:
             echo ">>> [FINAL] Application Logs (First 50 lines):"
             docker logs ztlog-admin || echo "No logs found."
 
-            docker image prune -f
+            docker image prune -f || true
