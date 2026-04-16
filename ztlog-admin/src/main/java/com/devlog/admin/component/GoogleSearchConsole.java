@@ -40,7 +40,10 @@ public class GoogleSearchConsole {
     @PostConstruct
     public void init() {
         try (InputStream keyFile = getClass().getResourceAsStream("/google-search-console-key.json")) {
-            if (keyFile == null) throw new RuntimeException("구글 서비스 키 파일을 찾을 수 없습니다.");
+            if (keyFile == null) {
+                log.warn("구글 서비스 키 파일을 찾을 수 없습니다. Google Search Console 기능이 비활성화됩니다.");
+                return;
+            }
 
             GoogleCredentials credentials = GoogleCredentials.fromStream(keyFile)
                     .createScoped(Collections.singleton(SearchConsoleScopes.WEBMASTERS_READONLY));
