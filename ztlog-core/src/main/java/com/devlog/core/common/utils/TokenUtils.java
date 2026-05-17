@@ -184,7 +184,7 @@ public class TokenUtils {
      * @param refreshToken refresh 토큰
      * @param response     응답
      */
-    public void refresshTokenSetHeader(String refreshToken, HttpServletResponse response) {
+    public void refreshTokenSetHeader(String refreshToken, HttpServletResponse response) {
         response.setHeader("Refresh", refreshToken);
     }
 

@@ -46,7 +46,7 @@ public enum ResponseCode {
     // 404 Not Found
     NOT_FOUND_DATA(404, "조회된 정보가 없습니다."),
     NOT_FOUND_DELETE_DATA(404, "삭제할 정보가 없습니다."),
-    NOT_FOUNT_MATCH_PASSWORD(404, "비밀번호가 일치하지 않습니다."),
+    NOT_FOUND_MATCH_PASSWORD(404, "비밀번호가 일치하지 않습니다."),
 
     // 405 Method Not Allowed
     METHOD_NOT_ALLOWED_ERROR(405, "지원하지 않는 메소드 입니다."),

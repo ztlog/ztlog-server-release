@@ -1,10 +1,9 @@
 package com.devlog.admin.service.stats.dto.request;
 
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-public class MainStatsReqsDto {
+public class MainStatsReqDto {
     private long totalPostCount;
     private long totalTagCount;
     private long totalViewCount;

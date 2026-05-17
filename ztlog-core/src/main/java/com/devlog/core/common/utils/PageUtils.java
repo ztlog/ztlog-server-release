@@ -3,11 +3,13 @@ package com.devlog.core.common.utils;
 import com.devlog.core.common.constants.CommonConstants;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class PageUtils {
@@ -45,7 +47,7 @@ public class PageUtils {
                     .getId(Long.class)
                     .getName();
         } catch (Exception e) {
-            System.out.println("PK를 찾지 못함: " + e.getMessage());
+            log.error("PK를 찾지 못함: {}", e.getMessage());
             // PK를 찾지 못할 경우 기본값 'id' 반환 (Safety Net)
             return "id";
         }

@@ -1,7 +1,7 @@
 package com.devlog.admin.controller.stats;
 
 import com.devlog.admin.service.stats.MainStatsService;
-import com.devlog.admin.service.stats.dto.response.MainStsatsResDto;
+import com.devlog.admin.service.stats.dto.response.MainStatsResDto;
 import com.devlog.core.common.enumulation.ResponseCode;
 import com.devlog.core.common.dto.Response;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,7 +36,7 @@ public class MainDashBoardController {
             @ApiResponse(responseCode = "500", description = "예상치 못한 서버 에러 발생", content = @Content(schema = @Schema(implementation = ResponseCode.class)))
     })
     @GetMapping("/main")
-    public ResponseEntity<Response<MainStsatsResDto>> getMainStatisticsInfo() {
+    public ResponseEntity<Response<MainStatsResDto>> getMainStatisticsInfo() {
         return Response.success(ResponseCode.OK_SUCCESS, mainStatsService.getMainStatisticsInfo());
     }
 

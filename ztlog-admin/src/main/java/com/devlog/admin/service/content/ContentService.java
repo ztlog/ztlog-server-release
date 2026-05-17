@@ -47,7 +47,7 @@ public class ContentService {
     private final TagRepository tagRepository;
 
     // mapper
-    private final ContentMapper contentStatisticsMapper;
+    private final ContentMapper contentMapper;
 
     // utils
     private final TokenUtils tokenUtils;
@@ -61,8 +61,8 @@ public class ContentService {
      */
     public ContentListResDto getContentList(Integer page) {
         RowBounds rowBounds = pageUtils.getRowBounds(page);
-        Integer totalCount = contentStatisticsMapper.selectCountContentList();
-        List<ContentResDto> contentList = contentStatisticsMapper.selectContentList(rowBounds);
+        Integer totalCount = contentMapper.selectCountContentList();
+        List<ContentResDto> contentList = contentMapper.selectContentList(rowBounds);
         return ContentListResDto.of(contentList, page, totalCount);
     }
 
@@ -73,7 +73,7 @@ public class ContentService {
      * @return 컨텐츠 객체
      */
     public ContentResDto getContentDetail(Long ctntNo) {
-        return contentStatisticsMapper.selectContent(ctntNo)
+        return contentMapper.selectContent(ctntNo)
                 .orElseThrow(() -> new DataNotFoundException(ResponseCode.NOT_FOUND_DATA.getMessage()));
     }
 
@@ -176,8 +176,8 @@ public class ContentService {
      */
     public ContentListResDto searchContentList(SearchType type, String param, Integer page) {
         RowBounds rowBounds = pageUtils.getRowBounds(page);
-        Integer totalCount = contentStatisticsMapper.selectCountSearchContentList(type, param);
-        List<ContentResDto> list = contentStatisticsMapper.selectSearchContentList(type, param, rowBounds);
+        Integer totalCount = contentMapper.selectCountSearchContentList(type, param);
+        List<ContentResDto> list = contentMapper.selectSearchContentList(type, param, rowBounds);
         return ContentListResDto.of(list, page, totalCount);
     }
 }
