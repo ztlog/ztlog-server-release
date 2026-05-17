@@ -163,7 +163,7 @@ public class ContentService {
         contentRepository.flush();  // DB에 즉시 반영 (UPD_DTTM 갱신됨)
 
         // DB의 최신 값을 다시 엔티티로 읽어옴
-        entityManager.refresh(content);
+        // entityManager.refresh(content);
     }
 
     /**

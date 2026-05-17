@@ -40,6 +40,10 @@ server:
   servlet:
     context-path: '/front'
 
+security:
+  password-encoder:
+    secret: "secret"
+
 ---
 
 spring:
