@@ -5,6 +5,7 @@ import com.devlog.core.common.enumulation.ResponseCode;
 import com.devlog.core.config.exception.DataConflictException;
 import com.devlog.core.config.exception.DataNotFoundException;
 import com.devlog.core.config.exception.InternalServerException;
+import com.devlog.core.config.exception.ValidationException;
 import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -45,8 +46,14 @@ public class CustomExceptionHandler {
         return Response.error(responseCode);
     }
 
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<Response<String>> handleValidationException(ValidationException e) {
+        log.warn("ValidationException: {}", e.getMessage());
+        return Response.error(e.getResponseCode(), e.getMessage());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Response<String>> handleValidationException(MethodArgumentNotValidException e) {
+    public ResponseEntity<Response<String>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         String message = e.getBindingResult().getFieldErrors().stream()
                 .findFirst()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)

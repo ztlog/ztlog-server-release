@@ -138,16 +138,14 @@ public class TokenUtils {
      * 토큰 검증
      *
      * @param token 토큰
-     * @return 검증 여부
      */
-    public boolean validateToken(String token) {
+    public void validateToken(String token) {
         try {
             Jwts.parserBuilder()
                     .setSigningKey(key)
                     .setAllowedClockSkewSeconds(60)
                     .build()
                     .parseClaimsJws(token);
-            return true;
         } catch (ExpiredJwtException e) {
             log.warn("[TokenUtils] Expired JWT Token: {}", e.getMessage());
             throw new JwtException("EXPIRED_TOKEN");
