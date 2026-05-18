@@ -62,7 +62,7 @@ public class UserService {
             throw e;
         } catch (Exception e) {
             log.error("[TokenService] Unexpected error while retrieving user info", e);
-            throw new JwtException("사용자 정보 조회 중 알 수 없는 오류가 발생했습니다.");
+            throw new InternalServerException("사용자 정보 조회 중 알 수 없는 오류가 발생했습니다.");
         }
 
     }

@@ -31,7 +31,7 @@ public class TagService {
     private final ContentTagRepository contentTagRepository;
 
     // mapper
-    private final TagMapper tagStatisticMapper;
+    private final TagMapper tagMapper;
     private final PageUtils pageUtils;
 
     /**
@@ -41,7 +41,7 @@ public class TagService {
      */
     public TagListResDto getTagList(Integer page) {
         RowBounds rowBounds = pageUtils.getRowBounds(page);
-        List<TagCountResDto> tagList = tagStatisticMapper.selectTagList(rowBounds);
+        List<TagCountResDto> tagList = tagMapper.selectTagList(rowBounds);
         return TagListResDto.of(tagList, page);
     }
 

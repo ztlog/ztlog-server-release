@@ -28,14 +28,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final UserDetailsService userDetailsService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
-
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = tokenUtils.resolveAccessToken(request);
 
-        try {
-            // JWT 토큰이 없는 경우 세션에서 인증 정보 확인 (스프링 시큐리티 기본 필터가 처리하도록 함)
-            if (StringUtils.hasText(token) && tokenUtils.validateToken(token)) {
+        if (StringUtils.hasText(token)) {
+            try {
+                // JWT 토큰이 없는 경우 세션에서 인증 정보 확인 (스프링 시큐리티 기본 필터가 처리하도록 함)
+                this.tokenUtils.validateToken(token);
                 String userId = tokenUtils.getUserIdFromToken(token);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(userId);
 
@@ -45,9 +44,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
+            } catch (JwtException e) {
+                request.setAttribute("exception", e.getMessage());
             }
-        } catch (JwtException e) {
-            request.setAttribute("exception", e.getMessage());
         }
 
         filterChain.doFilter(request, response);

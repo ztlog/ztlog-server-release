@@ -7,6 +7,7 @@ import java.io.Serializable;
 
 
 @Getter
+@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 public class ContentTagPK implements Serializable {

@@ -17,7 +17,7 @@ import java.util.List;
 public class Tag extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "tags", fetch = FetchType.LAZY)
-    List<ContentTag> contentTags = new ArrayList<>();
+    private List<ContentTag> contentTags = new ArrayList<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

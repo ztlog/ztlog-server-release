@@ -1,8 +1,8 @@
 package com.devlog.admin.service.stats;
 
 import com.devlog.admin.mapper.stats.MainStatsMapper;
-import com.devlog.admin.service.stats.dto.request.MainStatsReqsDto;
-import com.devlog.admin.service.stats.dto.response.MainStsatsResDto;
+import com.devlog.admin.service.stats.dto.request.MainStatsReqDto;
+import com.devlog.admin.service.stats.dto.response.MainStatsResDto;
 import com.devlog.core.common.enumulation.ResponseCode;
 import com.devlog.core.config.exception.DataNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -23,10 +23,10 @@ public class MainStatsService {
      *
      * @return 메인화면(대쉬보드) 정보
      */
-    public MainStsatsResDto getMainStatisticsInfo() {
-        MainStatsReqsDto mainStatsReqsDto = mainStatsMapper.selectMainStatistics()
+    public MainStatsResDto getMainStatisticsInfo() {
+        MainStatsReqDto mainStatsReqDto = mainStatsMapper.selectMainStatistics()
                 .orElseThrow(() -> new DataNotFoundException(ResponseCode.NOT_FOUND_DATA.getMessage()));
-        return MainStsatsResDto.of(mainStatsReqsDto);
+        return MainStatsResDto.of(mainStatsReqDto);
     }
 
 }

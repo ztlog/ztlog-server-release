@@ -10,7 +10,6 @@ import org.hibernate.type.YesNoConverter;
 import java.util.*;
 
 @Getter
-@Setter
 @Entity
 @SoftDelete(columnName = "DELETED_YN", converter = YesNoConverter.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

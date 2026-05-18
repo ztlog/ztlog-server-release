@@ -34,8 +34,7 @@ public class TokenUtils {
 
     @jakarta.annotation.PostConstruct
     public void init() {
-        byte[] keyBytes = io.jsonwebtoken.security.Keys.hmacShaKeyFor(secretKey.getBytes()).getEncoded();
-        this.key = io.jsonwebtoken.security.Keys.hmacShaKeyFor(keyBytes);
+        this.key = io.jsonwebtoken.security.Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
 
@@ -106,8 +105,8 @@ public class TokenUtils {
 
         log.info("[TokenUtils] Bearer Token : {}", bearerToken);
 
-        // Prefix 제거 (상수 길이 활용 권장: CommonConstants.BEARER_PREFIX.length())
-        String token = bearerToken.substring(7);
+        // Prefix 제거
+        String token = bearerToken.substring(CommonConstants.BEARER_PREFIX.length());
         log.info("[TokenUtils] JWT Token : {}", token);
 
         // 2. JWT 파싱 및 Subject 반환
@@ -139,16 +138,14 @@ public class TokenUtils {
      * 토큰 검증
      *
      * @param token 토큰
-     * @return 검증 여부
      */
-    public boolean validateToken(String token) {
+    public void validateToken(String token) {
         try {
             Jwts.parserBuilder()
                     .setSigningKey(key)
                     .setAllowedClockSkewSeconds(60)
                     .build()
                     .parseClaimsJws(token);
-            return true;
         } catch (ExpiredJwtException e) {
             log.warn("[TokenUtils] Expired JWT Token: {}", e.getMessage());
             throw new JwtException("EXPIRED_TOKEN");
@@ -184,7 +181,7 @@ public class TokenUtils {
      * @param refreshToken refresh 토큰
      * @param response     응답
      */
-    public void refresshTokenSetHeader(String refreshToken, HttpServletResponse response) {
+    public void refreshTokenSetHeader(String refreshToken, HttpServletResponse response) {
         response.setHeader("Refresh", refreshToken);
     }
 
@@ -197,7 +194,7 @@ public class TokenUtils {
     public String resolveAccessToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(CommonConstants.AUTHORIZATION_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(CommonConstants.BEARER_PREFIX)) {
-            return bearerToken.substring(7);
+            return bearerToken.substring(CommonConstants.BEARER_PREFIX.length());
         }
         return null;
     }

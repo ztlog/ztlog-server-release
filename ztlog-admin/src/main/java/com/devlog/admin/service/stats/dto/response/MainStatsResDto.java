@@ -1,14 +1,14 @@
 package com.devlog.admin.service.stats.dto.response;
 
-import com.devlog.admin.service.stats.dto.request.MainStatsReqsDto;
+import com.devlog.admin.service.stats.dto.request.MainStatsReqDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 @Getter
-@NoArgsConstructor // 추가
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder(access = AccessLevel.PRIVATE)
-public class MainStsatsResDto {
+public class MainStatsResDto {
 
     @Schema(description = "총 게시물 갯수")
     private long totalPostCount;
@@ -22,8 +22,8 @@ public class MainStsatsResDto {
     @Schema(description = "총 댓글 수")
     private long totalCommentCount;
 
-    public static MainStsatsResDto of(MainStatsReqsDto statistics) {
-        return MainStsatsResDto.builder()
+    public static MainStatsResDto of(MainStatsReqDto statistics) {
+        return MainStatsResDto.builder()
                 .totalPostCount(statistics.getTotalPostCount())
                 .totalTagCount(statistics.getTotalTagCount())
                 .totalViewCount(statistics.getTotalViewCount())
