@@ -75,6 +75,19 @@ public class UserController {
     }
 
     /**
+     * 계정 승인하기
+     *
+     * @param userNo 승인할 사용자 번호
+     * @return 성공 응답
+     */
+    @Operation(summary = "회원가입 승인하기", description = "회원가입 승인하기")
+    @PatchMapping("/user/{userNo}/approve")
+    public ResponseEntity<Response<String>> approveUser(@PathVariable Long userNo) {
+        userService.approveUser(userNo);
+        return Response.success(ResponseCode.OK_SUCCESS);
+    }
+
+    /**
      * 회원탈퇴하기
      *
      * @param request HTTP 요청

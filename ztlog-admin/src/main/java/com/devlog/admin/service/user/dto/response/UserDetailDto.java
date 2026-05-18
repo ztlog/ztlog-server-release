@@ -1,5 +1,6 @@
 package com.devlog.admin.service.user.dto.response;
 
+import com.devlog.core.common.enumulation.UserStatus;
 import com.devlog.core.entity.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -61,6 +62,6 @@ public class UserDetailDto implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return UserStatus.ACTIVE.equals(user.getStatus());
     }
 }

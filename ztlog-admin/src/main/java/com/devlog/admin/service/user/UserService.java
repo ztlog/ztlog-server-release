@@ -7,6 +7,7 @@ import com.devlog.admin.service.user.dto.response.UserResDto;
 import com.devlog.core.common.dto.TokenInfo;
 import com.devlog.core.common.enumulation.ResponseCode;
 import com.devlog.core.common.enumulation.UserRole;
+import com.devlog.core.common.enumulation.UserStatus;
 import com.devlog.core.common.utils.TokenUtils;
 import com.devlog.core.config.exception.DataConflictException;
 import com.devlog.core.config.exception.DataNotFoundException;
@@ -19,6 +20,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -78,11 +80,9 @@ public class UserService {
             throw new DataConflictException(ResponseCode.CONFLICT_USER_ERROR.getMessage());
         }
 
-        // TODO : 최상위 어드민 권한 허용 로직 추가
-
         // 비밀번호 암호화 및 사용자 생성
         String encodedPassword = passwordEncoder.encode(reqDto.getPassword());
-        User user = User.created(reqDto.getUserId(), reqDto.getUsername(), encodedPassword, UserRole.ADMIN.value());
+        User user = User.created(reqDto.getUserId(), reqDto.getUsername(), encodedPassword, UserRole.ADMIN.value(), UserStatus.PENDING);
 
         userRepository.save(user);
     }
@@ -104,6 +104,8 @@ public class UserService {
             }
 
             throw new InternalServerException(ResponseCode.INTERNAL_SERVER_ERROR.getMessage());
+        } catch (DisabledException e) {
+            throw new DataNotFoundException("승인 대기 중인 계정입니다. 관리자에게 문의하세요.");
         } catch (AuthenticationException e) {
             throw new DataNotFoundException("아이디 또는 비밀번호가 일치하지 않습니다.");
         }
@@ -123,6 +125,16 @@ public class UserService {
         if (session != null) {
             session.invalidate();
         }
+    }
+
+    /**
+     * 계정 승인
+     *
+     * @param userNo 승인할 사용자 번호
+     */
+    public void approveUser(Long userNo) {
+        User user = userRepository.findById(userNo).orElseThrow(() -> new DataNotFoundException(ResponseCode.NOT_FOUND_DATA.getMessage()));
+        user.approve();
     }
 
     /**
