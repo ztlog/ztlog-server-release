@@ -55,11 +55,14 @@ controller → service → repository (core) → entity (core)
 | 테이블 | 설명 |
 | --- | --- |
 | `user_mst` | 사용자 계정 및 권한 관리 |
+| `cate_mst` | 카테고리 (계층형 자기참조) |
 | `contents_mst` | 게시글 메타데이터 (제목, 부제목 등) |
 | `contents_dtl` | 게시글 상세 본문 (`@MapsId`를 통한 마스터 PK 공유) |
 | `tags_mst` | 태그 마스터 정보 |
 | `contents_tags` | 게시글-태그 다대다(N:M) 매핑 테이블 |
 | `file_mst` | 첨부 파일 이력 관리 |
+
+> 테이블 컬럼 상세 및 관계도 → [docs/ERD-DIAGRAM.md](docs/ERD-DIAGRAM.md)
 
 ---
 
@@ -92,11 +95,13 @@ controller → service → repository (core) → entity (core)
 ### 🐳 Docker 자동 배포
 
 **GitHub Actions를 통한 자동 배포**
-- `develop` 브랜치 → dev 환경 (포트: 9080, 9088)
-- `main` 브랜치 → prd 환경 (포트: 8080, 8088)
+- `develop` 브랜치 → dev 환경 (포트: ADM 9089 / API 9088)
+- `main` 브랜치 → prd 환경 (포트: ADM 8089 / API 8088)
 - 자동으로 Docker 이미지 빌드 및 EC2 배포
 
 **프로파일**: `local`, `dev`, `prd` (공통 설정은 `common` 프로파일로 관리)
+
+> 배포 절차 상세 → [docs/DEPLOY-MANUAL.md](docs/DEPLOY-MANUAL.md)
 
 ---
 
@@ -107,9 +112,48 @@ controller → service → repository (core) → entity (core)
 | Admin Swagger UI | `http://localhost:8080/admin/swagger-ui/index.html` |
 | Front Swagger UI | `http://localhost:8086/front/swagger-ui/index.html` |
 
+> 전체 엔드포인트 목록 → [docs/API-LIST.md](docs/API-LIST.md)
+
 ---
 
 ## 보안 (Security)
 
 - JWT 기반 인증 (JJWT 0.11.5)
 - 공개 엔드포인트: `/api/v1/user/login`, `/api/v1/user/signup`, `/main/**`, Swagger 경로
+
+---
+
+## 회원 관리 (User Management)
+
+### 계정 상태 (UserStatus)
+
+| 상태 | 설명 |
+| --- | --- |
+| `PENDING` | 회원가입 후 관리자 승인 대기 상태 |
+| `ACTIVE` | 승인 완료, 정상 로그인 가능 상태 |
+
+### 회원 승인 플로우
+
+```
+회원가입 (/signup) → PENDING 상태로 생성
+         ↓
+관리자 승인 (PATCH /api/v1/user/{userNo}/approve)
+         ↓
+ACTIVE 상태로 전환 → 로그인 가능
+```
+
+미승인 계정(`PENDING`)으로 로그인 시도 시 `DisabledException`이 발생하며, 클라이언트에 승인 대기 안내 메시지가 반환됩니다.
+
+### 슈퍼유저 자동 생성 (SuperUserInitializer)
+
+서버 기동 시 `SuperUserInitializer`가 실행되어, 등록된 슈퍼유저 계정이 없으면 자동으로 생성합니다.
+
+환경 변수로 계정 정보를 주입할 수 있습니다:
+
+```yaml
+# application.yml
+admin:
+  super-user:
+    id: ${SUPER_USER_ID}
+    password: ${SUPER_USER_PASSWORD}
+```
