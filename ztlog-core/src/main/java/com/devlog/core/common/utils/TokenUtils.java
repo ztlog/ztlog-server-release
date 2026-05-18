@@ -34,8 +34,7 @@ public class TokenUtils {
 
     @jakarta.annotation.PostConstruct
     public void init() {
-        byte[] keyBytes = io.jsonwebtoken.security.Keys.hmacShaKeyFor(secretKey.getBytes()).getEncoded();
-        this.key = io.jsonwebtoken.security.Keys.hmacShaKeyFor(keyBytes);
+        this.key = io.jsonwebtoken.security.Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
 
@@ -106,8 +105,8 @@ public class TokenUtils {
 
         log.info("[TokenUtils] Bearer Token : {}", bearerToken);
 
-        // Prefix 제거 (상수 길이 활용 권장: CommonConstants.BEARER_PREFIX.length())
-        String token = bearerToken.substring(7);
+        // Prefix 제거
+        String token = bearerToken.substring(CommonConstants.BEARER_PREFIX.length());
         log.info("[TokenUtils] JWT Token : {}", token);
 
         // 2. JWT 파싱 및 Subject 반환
@@ -197,7 +196,7 @@ public class TokenUtils {
     public String resolveAccessToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(CommonConstants.AUTHORIZATION_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(CommonConstants.BEARER_PREFIX)) {
-            return bearerToken.substring(7);
+            return bearerToken.substring(CommonConstants.BEARER_PREFIX.length());
         }
         return null;
     }

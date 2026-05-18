@@ -96,8 +96,8 @@ public class ContentService {
             final var tag = tagRepository.findById(tagReqDto.getTagNo()).orElseGet(() -> tagRepository.save(Tag.created(tagReqDto.getTagName())));
             contentTags.add(ContentTag.created(tag, tagReqDto.getSort(), content));
         });
-        contentTagRepository.saveAll(contentTags);
         contentRepository.save(content);
+        contentTagRepository.saveAll(contentTags);
     }
 
     /**
@@ -107,6 +107,8 @@ public class ContentService {
      * @param reqDto  컨텐츠 요청 객체
      */
     public void updateContentDetail(HttpServletRequest request, ContentReqDto.ContentReqInfoDto reqDto) {
+        String userId = tokenUtils.getUserIdFromHeader(request);
+
         // 컨텐츠 null check
         Content content = contentRepository.findById(reqDto.getCtntNo())
                 .orElseThrow(() -> new DataNotFoundException(ResponseCode.NOT_FOUND_DATA.getMessage()));
@@ -143,8 +145,8 @@ public class ContentService {
         }
 
         // 컨텐츠 수정 - 새로 추가되거나 수정된 리스트 반영
-        content.updated(reqDto.getTitle(), reqDto.getSubTitle(), category, tokenUtils.getUserIdFromHeader(request));
-        content.getContentDetail().updated(reqDto.getTitle(), reqDto.getBody(), content, tokenUtils.getUserIdFromHeader(request));
+        content.updated(reqDto.getTitle(), reqDto.getSubTitle(), category, userId);
+        content.getContentDetail().updated(reqDto.getTitle(), reqDto.getBody(), content, userId);
         contentTagRepository.saveAll(newTagsList);
 
     }
@@ -161,9 +163,6 @@ public class ContentService {
         contentTagRepository.deleteAll(content.getContentTags());
         contentRepository.delete(content);
         contentRepository.flush();  // DB에 즉시 반영 (UPD_DTTM 갱신됨)
-
-        // DB의 최신 값을 다시 엔티티로 읽어옴
-        // entityManager.refresh(content);
     }
 
     /**
