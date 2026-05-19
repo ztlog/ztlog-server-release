@@ -52,8 +52,9 @@
 | JJWT | 0.11.5 | JWT 생성·검증, 서명 알고리즘(HMAC-SHA512) 지원 |
 | Pbkdf2PasswordEncoder | (Spring Security) | HMAC-SHA512, 16-byte salt, 310,000 iterations — NIST 권고 수준 |
 
-- **토큰 전략**: Access Token 단기 발급, stateless 세션(`STATELESS` 정책)
-- **계정 상태**: `UserStatus.PENDING` → 관리자 승인 → `UserStatus.ACTIVE` 순서로 활성화
+- **토큰 전략**: Access Token 10분, Refresh Token 180일. 만료 시 `Refresh` 헤더를 통해 필터 레이어에서 자동 재발급
+- **인가**: `@EnableMethodSecurity` + `@Secured` 메서드 레벨 권한 제어. 권한 부족 시 `AccessDeniedHandler`가 403 JSON 반환
+- **계정 상태**: `UserStatus.PENDING` → 관리자 승인(`@Secured("ADMIN")`) → `UserStatus.ACTIVE` 순서로 활성화
 
 ---
 

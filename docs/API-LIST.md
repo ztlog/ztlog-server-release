@@ -16,7 +16,7 @@
 | `POST` | `/api/v1/user/signup` | - | 회원가입 (PENDING 상태로 생성) |
 | `POST` | `/api/v1/user/login` | - | 로그인 → JWT 토큰 반환 |
 | `POST` | `/api/v1/user/logout` | 🔒 | 로그아웃 |
-| `PATCH` | `/api/v1/user/{userNo}/approve` | 🔒 | 회원가입 승인 (PENDING → ACTIVE) |
+| `PATCH` | `/api/v1/user/{userNo}/approve` | 🔒 ADMIN | 회원가입 승인 (PENDING → ACTIVE) |
 | `DELETE` | `/api/v1/user/withdraw` | 🔒 | 회원탈퇴 |
 
 ---
@@ -142,9 +142,13 @@
 |---|---|
 | `200` | 성공 |
 | `201` | 생성 성공 |
-| `400` | 리소스 없음 / 잘못된 요청 |
+| `400` | 잘못된 요청 / 유효성 검사 실패 |
 | `401` | 인증 실패 (JWT 없음 또는 만료) |
+| `403` | 권한 없음 (인증은 됐으나 접근 불가) |
+| `404` | 리소스 없음 |
+| `405` | 지원하지 않는 HTTP 메서드 |
 | `409` | 중복 데이터 (e.g. 이미 존재하는 아이디) |
+| `413` | 파일 크기 초과 (최대 10MB) |
 | `500` | 서버 내부 오류 |
 
 ---
