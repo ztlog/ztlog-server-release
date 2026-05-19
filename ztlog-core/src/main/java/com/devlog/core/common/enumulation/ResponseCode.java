@@ -40,6 +40,7 @@ public enum ResponseCode {
     UNAUTHORIZED_EXPIRED_TOKEN(401, "토큰이 만료되었습니다. 다시 로그인 해주세요."),
 
     // 403 Forbidden
+    FORBIDDEN(403, "접근 권한이 없습니다."),
     FORBIDDEN_FILE_TYPE(403, "허용되지 않은 파일 형식입니다."),
     FORBIDDEN_FILE_NAME(403, "허용되지 않은 파일 이름입니다."),
 
