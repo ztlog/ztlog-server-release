@@ -13,6 +13,7 @@ import org.springframework.util.StringUtils;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 @Slf4j
@@ -59,6 +60,8 @@ public class TokenUtils {
 
         // Refresh Token 생성
         String refreshToken = Jwts.builder()
+                .setSubject(userId)
+                .claim(USER_ID, userId)
                 .setExpiration(refreshTokenExpires)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
@@ -183,6 +186,32 @@ public class TokenUtils {
      */
     public void refreshTokenSetHeader(String refreshToken, HttpServletResponse response) {
         response.setHeader("Refresh", refreshToken);
+    }
+
+    /**
+     * 리프레시 토큰으로 새 토큰 발급 후 응답 헤더에 세팅
+     * 액세스 토큰 만료 시 필터에서 호출
+     *
+     * @param request  요청
+     * @param response 응답
+     * @return 재발급 성공 여부
+     */
+    public boolean reissue(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = request.getHeader("Refresh");
+        if (!StringUtils.hasText(refreshToken)) {
+            return false;
+        }
+        try {
+            validateToken(refreshToken);
+            String userId = getUserIdFromToken(refreshToken);
+            TokenInfo tokenInfo = generateToken(userId);
+            accessTokenSetHeader(tokenInfo.getAccessToken(), response);
+            refreshTokenSetHeader(tokenInfo.getRefreshToken(), response);
+            return true;
+        } catch (Exception e) {
+            log.warn("[TokenUtils] Refresh token reissue failed: {}", e.getMessage());
+            return false;
+        }
     }
 
     /**
