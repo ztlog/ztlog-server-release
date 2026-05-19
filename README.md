@@ -118,8 +118,40 @@ controller → service → repository (core) → entity (core)
 
 ## 보안 (Security)
 
-- JWT 기반 인증 (JJWT 0.11.5)
-- 공개 엔드포인트: `/api/v1/user/login`, `/api/v1/user/signup`, `/main/**`, Swagger 경로
+### 인증 / 인가
+
+| 항목 | 설명 |
+| --- | --- |
+| 인증 방식 | JWT Bearer 토큰 (`Authorization` 헤더) |
+| 액세스 토큰 | 유효 기간 10분. 만료 시 자동 재발급 (아래 참고) |
+| 리프레시 토큰 | 유효 기간 180일. `Refresh` 헤더로 전달 |
+| 비밀번호 해시 | `Pbkdf2PasswordEncoder` (PBKDF2WithHmacSHA512, 310,000 iterations) |
+| 메서드 권한 | `@EnableMethodSecurity` + `@Secured("ADMIN")` |
+
+### 토큰 자동 재발급 흐름
+
+액세스 토큰이 만료된 요청이 들어오면 `JwtAuthenticationFilter`가 `Refresh` 헤더의 리프레시 토큰을 검증하고, 유효하면 새 토큰을 응답 헤더에 세팅하여 요청을 정상 처리합니다. 리프레시 토큰도 무효한 경우에만 401을 반환합니다.
+
+```
+요청 (만료된 액세스 토큰)
+  → JwtAuthenticationFilter: EXPIRED_TOKEN 감지
+  → Refresh 헤더 검증
+  → 성공: 새 Access/Refresh 토큰 응답 헤더 세팅 → 요청 정상 처리
+  → 실패: 401 반환
+```
+
+### 예외 처리
+
+| HTTP 상태 | 예외 | 처리 클래스 |
+| --- | --- | --- |
+| 401 | 미인증 / 유효하지 않은 토큰 | `JwtAuthenticationEntryPoint` |
+| 403 | 권한 부족 (`@Secured` 실패) | `CustomAuthenticationEntryPoint` (AccessDeniedHandler) |
+| 405 | 지원하지 않는 HTTP 메서드 | `CustomExceptionHandler` |
+| 413 | 파일 크기 초과 (multipart) | `CustomExceptionHandler` |
+
+### 공개 엔드포인트
+
+`/api/v1/user/login`, `/api/v1/user/signup`, `/main/**`, Swagger 경로 (`/swagger-ui/**`, `/v3/api-docs/**`)
 
 ---
 

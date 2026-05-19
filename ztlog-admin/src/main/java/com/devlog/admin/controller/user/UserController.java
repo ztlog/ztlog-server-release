@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import com.devlog.admin.service.user.dto.request.LoginReqDto;
 
@@ -80,6 +81,7 @@ public class UserController {
      * @param userNo 승인할 사용자 번호
      * @return 성공 응답
      */
+    @Secured("ADMIN")
     @Operation(summary = "회원가입 승인하기", description = "회원가입 승인하기")
     @PatchMapping("/user/{userNo}/approve")
     public ResponseEntity<Response<String>> approveUser(@PathVariable Long userNo) {
