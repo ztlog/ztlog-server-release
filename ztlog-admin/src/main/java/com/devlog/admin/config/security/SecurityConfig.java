@@ -100,8 +100,8 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         //configuration.setAllowedOrigins(Arrays.asList("*"));
         configuration.setAllowedOrigins(List.of("https://ztlog.io", "https://admin.ztlog.io"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
-        configuration.setAllowedHeaders(Arrays.asList("X-Requested-With", "Content-Type", "Authorization", "X-XSRF-token"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH"));
+        configuration.setAllowedHeaders(Arrays.asList("X-Requested-With", "Content-Type", "Authorization", "X-XSRF-token", "Refresh"));
         configuration.setAllowCredentials(false);
         configuration.setMaxAge(3600L);
 
