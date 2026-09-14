@@ -99,7 +99,7 @@ public class ContentListResDto {
                     .ctntNo(content.getCtntNo())
                     .title(content.getCtntTitle())
                     .subTitle(content.getCtntSubTitle())
-                    .category(CategoryInfoDto.of(content.getCategory()))
+                    .category(CategoryInfoDto.ofOptional(content.getCategory()).orElse(null))
                     .tags(TagInfoDto.toTagResDtoList(content.getContentTags()))
                     .inpUser(content.getInpUser())
                     .inpDttm(content.getInpDttm())

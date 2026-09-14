@@ -29,7 +29,7 @@ public class Content extends BaseTimeEntity {
     @Column(name = "CTNT_SUBTITLE", nullable = false)
     private String ctntSubTitle;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CATE_NO")
     private Category category;
 

@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -70,7 +71,7 @@ public class TagController {
             @ApiResponse(responseCode = "500", description = "예상치 못한 서버 에러 발생", content = @Content(schema = @Schema(implementation = ResponseCode.class)))
     })
     @PostMapping("/tags")
-    public ResponseEntity<Response<String>> createTagDetail(@RequestBody TagReqDto reqDto) {
+    public ResponseEntity<Response<String>> createTagDetail(@RequestBody @Valid TagReqDto reqDto) {
         tagService.createTagDetail(reqDto);
         return Response.success(ResponseCode.CREATED_SUCCESS);
     }
@@ -88,7 +89,7 @@ public class TagController {
             @ApiResponse(responseCode = "500", description = "예상치 못한 서버 에러 발생", content = @Content(schema = @Schema(implementation = ResponseCode.class)))
     })
     @PutMapping("/tags")
-    public ResponseEntity<Response<String>> updateTagDetail(@RequestBody TagReqDto reqDto) {
+    public ResponseEntity<Response<String>> updateTagDetail(@RequestBody @Valid TagReqDto reqDto) {
         tagService.updateTagDetail(reqDto);
         return Response.success(ResponseCode.OK_SUCCESS);
     }

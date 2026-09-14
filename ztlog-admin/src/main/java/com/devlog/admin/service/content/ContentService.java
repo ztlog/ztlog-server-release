@@ -9,6 +9,7 @@ import com.devlog.core.common.enumulation.SearchType;
 import com.devlog.core.common.utils.PageUtils;
 import com.devlog.core.common.utils.TokenUtils;
 import com.devlog.core.config.exception.DataNotFoundException;
+import com.devlog.core.config.exception.ValidationException;
 import com.devlog.core.entity.category.Category;
 import com.devlog.core.entity.content.Content;
 import com.devlog.core.entity.content.ContentTag;
@@ -84,6 +85,12 @@ public class ContentService {
      * @param reqDto  컨텐츠 요청 객체
      */
     public void createContentDetail(HttpServletRequest request, ContentReqDto.ContentReqInfoDto reqDto) {
+        if (Objects.isNull(reqDto.getCateNo())) {
+            throw new ValidationException("카테고리 번호는 필수입니다.");
+        }
+        if (Objects.isNull(reqDto.getTags())) {
+            throw new ValidationException("태그 목록은 필수입니다.");
+        }
         // 카테고리 조회
         Category category = categoryRepository.findById(reqDto.getCateNo())
                 .orElseThrow(() -> new DataNotFoundException(ResponseCode.NOT_FOUND_DATA.getMessage()));
@@ -107,6 +114,13 @@ public class ContentService {
      * @param reqDto  컨텐츠 요청 객체
      */
     public void updateContentDetail(HttpServletRequest request, ContentReqDto.ContentReqInfoDto reqDto) {
+        if (Objects.isNull(reqDto.getCateNo())) {
+            throw new ValidationException("카테고리 번호는 필수입니다.");
+        }
+        if (Objects.isNull(reqDto.getTags())) {
+            throw new ValidationException("태그 목록은 필수입니다.");
+        }
+
         String userId = tokenUtils.getUserIdFromHeader(request);
 
         // 컨텐츠 null check

@@ -1,6 +1,7 @@
 package com.devlog.core.common.utils;
 
 import com.devlog.core.common.constants.CommonConstants;
+import com.devlog.core.config.exception.ValidationException;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,16 +18,19 @@ public class PageUtils {
     private final EntityManager entityManager;
 
     public PageRequest getPageable(int page, Class<?> entityClass) {
+        validatePage(page);
         String pkName = getPrimaryKeyName(entityClass);
         return PageRequest.of(page - 1, CommonConstants.PAGE_SIZE, Sort.by(pkName).descending());
     }
 
     public PageRequest getPageableEx(int page, Class<?> entityClass) {
+        validatePage(page);
         String pkName = getPrimaryKeyName(entityClass);
         return PageRequest.of(page - 1, CommonConstants.PAGE_LIST_SIZE, Sort.by(pkName).descending());
     }
 
     public int getStartIdx(int page) {
+        validatePage(page);
         return Long.valueOf(PageRequest.of(page - 1, CommonConstants.PAGE_SIZE).getOffset()).intValue();
     }
 
@@ -35,8 +39,15 @@ public class PageUtils {
     }
 
     public RowBounds getRowBounds(Integer page) {
+        validatePage(page);
         int offset = (page - 1) * CommonConstants.PAGE_LIST_SIZE;
         return new RowBounds(offset, CommonConstants.PAGE_LIST_SIZE);
+    }
+
+    private void validatePage(int page) {
+        if (page < 1) {
+            throw new ValidationException("페이지 번호는 1 이상이어야 합니다.");
+        }
     }
 
     private String getPrimaryKeyName(Class<?> entityClass) {

@@ -6,7 +6,6 @@ import com.devlog.core.common.enumulation.ResponseCode;
 import com.devlog.core.common.utils.PageUtils;
 import com.devlog.core.config.exception.DataNotFoundException;
 import com.devlog.core.entity.content.Content;
-import com.devlog.core.entity.tag.Tag;
 import com.devlog.core.repository.content.ContentRepository;
 import com.devlog.core.repository.tag.TagRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,8 +33,9 @@ public class TagService {
      * @return 태그 리스트
      */
     public List<TagResDto> getTagList() {
-        List<Tag> list = tagRepository.findAll().stream().sorted((tag1, tag2) -> tag2.getContentTags().size() - tag1.getContentTags().size()).toList();
-        return list.stream().map(TagResDto::of).collect(Collectors.toList());
+        return tagRepository.findAllOrderByContentCount().stream()
+                .map(TagResDto::of)
+                .collect(Collectors.toList());
     }
 
     /**

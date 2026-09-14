@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -75,7 +76,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "500", description = "예상치 못한 서버 에러 발생", content = @Content(schema = @Schema(implementation = ResponseCode.class)))
     })
     @PostMapping("/categories")
-    public ResponseEntity<Response<String>> createCategoryDetail(HttpServletRequest request, @RequestBody CategorySaveReqDto reqDto) {
+    public ResponseEntity<Response<String>> createCategoryDetail(HttpServletRequest request, @RequestBody @Valid CategorySaveReqDto reqDto) {
         categoryService.createCategoryDetail(request, reqDto);
         return Response.success(ResponseCode.CREATED_SUCCESS);
     }
@@ -94,7 +95,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "500", description = "예상치 못한 서버 에러 발생", content = @Content(schema = @Schema(implementation = ResponseCode.class)))
     })
     @PutMapping("/categories")
-    public ResponseEntity<Response<String>> updateCategoryDetail(HttpServletRequest request, @RequestBody CategoryUpdateReqDto reqDto) {
+    public ResponseEntity<Response<String>> updateCategoryDetail(HttpServletRequest request, @RequestBody @Valid CategoryUpdateReqDto reqDto) {
         categoryService.updateCategoryDetail(request, reqDto);
         return Response.success(ResponseCode.CREATED_SUCCESS);
     }

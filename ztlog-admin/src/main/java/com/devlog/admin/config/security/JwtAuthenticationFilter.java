@@ -1,5 +1,6 @@
 package com.devlog.admin.config.security;
 
+import com.devlog.core.common.constants.CommonConstants;
 import com.devlog.core.common.utils.TokenUtils;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
@@ -35,23 +36,32 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             try {
                 this.tokenUtils.validateToken(token);
                 String userId = tokenUtils.getUserIdFromToken(token);
-                UserDetails userDetails = userDetailsService.loadUserByUsername(userId);
-
-                if (userDetails != null) {
-                    UsernamePasswordAuthenticationToken authentication =
-                            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                }
+                authenticate(userId, request);
             } catch (JwtException e) {
-                if ("EXPIRED_TOKEN".equals(e.getMessage()) && tokenUtils.reissue(request, response)) {
-                    filterChain.doFilter(request, response);
-                    return;
+                if (CommonConstants.EXPIRED.equals(e.getMessage())) {
+                    if (tokenUtils.reissue(request, response)) {
+                        String refreshToken = request.getHeader(CommonConstants.REFRESH_HEADER);
+                        String reissuedUserId = tokenUtils.getUserIdFromToken(refreshToken);
+
+                        // 재발급된 정보로 즉시 인증 처리 후 필터 체인 통과 및 종료
+                        authenticate(reissuedUserId, request);
+                        filterChain.doFilter(request, response);
+                        return;
+                    }
                 }
                 request.setAttribute("exception", e.getMessage());
             }
         }
-
         filterChain.doFilter(request, response);
+    }
+
+    private void authenticate(String userId, HttpServletRequest request) {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(userId);
+
+        if (userDetails != null && userDetails.isEnabled()) {
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
     }
 }

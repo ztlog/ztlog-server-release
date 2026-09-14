@@ -60,6 +60,8 @@ public enum ResponseCode {
     CONFLICT_USER_ERROR(409, "이미 해당 계정으로 회원가입하셨습니다."),
     CONFLICT_LOGIN_ERROR(409, "이미 로그인 중인 유저입니다."),
     CONFLICT_REQUEST_ERROR(409, "처리중인 요청입니다."),
+    CONFLICT_CATEGORY_HAS_CHILDREN(409, "하위 카테고리가 존재하여 삭제할 수 없습니다."),
+    CONFLICT_CATEGORY_IN_USE(409, "해당 카테고리를 사용하는 게시물이 있어 삭제할 수 없습니다."),
 
     // 413 Payload Too Large
     PAYLOAD_TOO_LARGE_ERROR(413, "파일 크기가 너무 큽니다. 최대 10MB까지 업로드 가능합니다."),

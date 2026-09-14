@@ -106,11 +106,10 @@ public class TokenUtils {
             throw new JwtException("INVALID_TOKEN");
         }
 
-        log.info("[TokenUtils] Bearer Token : {}", bearerToken);
-
         // Prefix 제거
         String token = bearerToken.substring(CommonConstants.BEARER_PREFIX.length());
-        log.info("[TokenUtils] JWT Token : {}", token);
+        log.info("[TokenUtils] Bearer Token : {}", maskString(bearerToken));
+        log.info("[TokenUtils] JWT Token : {}", maskString(token));
 
         // 2. JWT 파싱 및 Subject 반환
         try {
@@ -232,6 +231,12 @@ public class TokenUtils {
     private String handleJwtException(String type, String message, Exception e) {
         log.warn("[TokenUtils] {} JWT Token - {}", type, e.getMessage());
         throw new JwtException(message);
+    }
+
+    public String maskString(String str) {
+        if (str == null || str.isBlank()) return "";
+        if (str.length() <= 8) return "***";
+        return str.substring(0, 8) + "***(len=" + str.length() + ")";
     }
 }
 

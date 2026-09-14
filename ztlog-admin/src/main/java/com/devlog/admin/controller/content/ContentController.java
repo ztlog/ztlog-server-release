@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -75,7 +76,7 @@ public class ContentController {
             @ApiResponse(responseCode = "500", description = "예상치 못한 서버 에러 발생", content = @Content(schema = @Schema(implementation = ResponseCode.class)))
     })
     @PostMapping("/contents")
-    public ResponseEntity<Response<String>> createContentDetail(HttpServletRequest request, @RequestBody ContentReqDto.ContentReqInfoDto reqDto) {
+    public ResponseEntity<Response<String>> createContentDetail(HttpServletRequest request, @RequestBody @Valid ContentReqDto.ContentReqInfoDto reqDto) {
         contentService.createContentDetail(request, reqDto);
         return Response.success(ResponseCode.CREATED_SUCCESS);
     }
@@ -93,7 +94,7 @@ public class ContentController {
             @ApiResponse(responseCode = "500", description = "예상치 못한 서버 에러 발생", content = @Content(schema = @Schema(implementation = ResponseCode.class)))
     })
     @PutMapping("/contents")
-    public ResponseEntity<Response<String>> updateContentDetail(HttpServletRequest request, @RequestBody ContentReqDto.ContentReqInfoDto reqDto) {
+    public ResponseEntity<Response<String>> updateContentDetail(HttpServletRequest request, @RequestBody @Valid ContentReqDto.ContentReqInfoDto reqDto) {
         contentService.updateContentDetail(request, reqDto);
         return Response.success(ResponseCode.CREATED_SUCCESS);
     }

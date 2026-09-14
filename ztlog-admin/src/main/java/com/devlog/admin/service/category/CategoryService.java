@@ -9,9 +9,11 @@ import com.devlog.core.common.enumulation.ResponseCode;
 import com.devlog.core.common.enumulation.UseYN;
 import com.devlog.core.common.utils.PageUtils;
 import com.devlog.core.common.utils.TokenUtils;
+import com.devlog.core.config.exception.DataConflictException;
 import com.devlog.core.config.exception.DataNotFoundException;
 import com.devlog.core.entity.category.Category;
 import com.devlog.core.repository.category.CategoryRepository;
+import com.devlog.core.repository.content.ContentRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,7 @@ public class CategoryService {
 
     // repository
     private final CategoryRepository categoryRepository;
+    private final ContentRepository contentRepository;
 
     // mapper
     private final CategoryMapper categoryMapper;
@@ -136,6 +139,14 @@ public class CategoryService {
     public void deleteCategoryDetail(Long cateNo) {
         var category = categoryRepository.findById(cateNo)
                 .orElseThrow(() -> new DataNotFoundException(ResponseCode.NOT_FOUND_DELETE_DATA.getMessage()));
+
+        if (!category.getCategories().isEmpty()) {
+            throw new DataConflictException(ResponseCode.CONFLICT_CATEGORY_HAS_CHILDREN.getMessage(), ResponseCode.CONFLICT_CATEGORY_HAS_CHILDREN);
+        }
+        if (contentRepository.countByCategoryCateNo(cateNo) > 0) {
+            throw new DataConflictException(ResponseCode.CONFLICT_CATEGORY_IN_USE.getMessage(), ResponseCode.CONFLICT_CATEGORY_IN_USE);
+        }
+
         categoryRepository.delete(category);
     }
 }

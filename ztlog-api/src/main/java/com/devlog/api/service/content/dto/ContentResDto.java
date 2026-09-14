@@ -63,7 +63,7 @@ public class ContentResDto {
                 .ctntNo(content.getCtntNo())
                 .title(content.getCtntTitle())
                 .body(contentDetail.getCtntBody())
-                .category(CategoryInfoDto.of(content.getCategory()))
+                .category(CategoryInfoDto.ofOptional(content.getCategory()).orElse(null))
                 .tags(TagInfoDto.toTagResDtoList(content.getContentTags()))
                 .path(contentDetail.getCtntPath())
                 .name(contentDetail.getCtntName())

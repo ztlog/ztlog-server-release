@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 
 @Repository
-public interface TagRepository extends JpaRepository<Tag, Long> {
+public interface TagRepository extends JpaRepository<Tag, Long>, TagRepositoryCustom {
 
     Boolean existsByTagName(String tagName);
 

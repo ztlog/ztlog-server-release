@@ -96,6 +96,9 @@ mybatis:
 
 ---
 
+cors:
+  allowed-origins: http://localhost:3000
+
 spring:
   config:
     activate:
@@ -104,7 +107,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ztlog?useSSL=false&zeroDateTimeBehavior=convertToNull&autoReconnect=true&useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
     username: root
-    password: 12345678
+    password: Cy07351258!
   mvc:
     async:
       request-timeout: 2000
@@ -127,6 +130,9 @@ logging:
 
 
 ---
+
+cors:
+  allowed-origins: https://ztlog.io,https://admin.ztlog.io
 
 spring:
   config:
@@ -160,6 +166,9 @@ logging:
 
 ---
 
+cors:
+  allowed-origins: https://ztlog.io,https://admin.ztlog.io
+
 spring:
   config:
     activate:
@@ -169,6 +178,12 @@ spring:
     url: jdbc:mysql://172.17.0.1:3306/ztlog_prd?useSSL=false&zeroDateTimeBehavior=convertToNull&autoReconnect=true&useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
     username: root
     password: Cy07351258!
+
+server:
+  servlet:
+    session:
+      cookie:
+        secure: true
   mvc:
     async:
       request-timeout: 2000

@@ -2,6 +2,7 @@ package com.devlog.admin.config.security;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,6 +33,9 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+
+    @Value("${cors.allowed-origins:}")
+    private List<String> allowedOrigins;
 
     /**
      * security 설정 적용
@@ -98,8 +102,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigure() {
         CorsConfiguration configuration = new CorsConfiguration();
-        //configuration.setAllowedOrigins(Arrays.asList("*"));
-        configuration.setAllowedOrigins(List.of("https://ztlog.io", "https://admin.ztlog.io"));
+        configuration.setAllowedOrigins(allowedOrigins);
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("X-Requested-With", "Content-Type", "Authorization", "X-XSRF-token", "Refresh"));
         configuration.setAllowCredentials(false);

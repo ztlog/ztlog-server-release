@@ -1,12 +1,10 @@
 package com.devlog.api.service.category.dto;
 
-import com.devlog.core.common.enumulation.UseYN;
 import com.devlog.core.entity.category.Category;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Getter
 @ToString
@@ -21,11 +19,14 @@ public class CategoryInfoDto {
     @Schema(description = "카테고리 이름")
     private String cateNm;
 
-    public static CategoryInfoDto of(Category category) {
+    private static CategoryInfoDto of(Category category) {
         return CategoryInfoDto.builder()
                 .cateNo(category.getCateNo())
                 .cateNm(category.getCateNm())
                 .build();
     }
 
+    public static Optional<CategoryInfoDto> ofOptional(Category category) {
+        return Optional.ofNullable(category).map(CategoryInfoDto::of);
+    }
 }

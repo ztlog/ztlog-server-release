@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -60,7 +61,7 @@ public class StatsJobController {
             @ApiResponse(responseCode = "500", description = "예상치 못한 서버 에러 발생", content = @Content(schema = @Schema(implementation = ResponseCode.class)))
     })
     @PostMapping("/comments/sync")
-    public ResponseEntity<Response<String>> syncCommentStats(@RequestBody CommentStatsReqDto reqDto) {
+    public ResponseEntity<Response<String>> syncCommentStats(@RequestBody @Valid CommentStatsReqDto reqDto) {
         commentStatsService.syncCommentStats(reqDto);
         return Response.success(ResponseCode.OK_SUCCESS);
     }
@@ -79,7 +80,7 @@ public class StatsJobController {
             @ApiResponse(responseCode = "500", description = "예상치 못한 서버 에러 발생", content = @Content(schema = @Schema(implementation = ResponseCode.class)))
     })
     @PostMapping("/views/total")
-    public ResponseEntity<Response<String>> syncTotalViews(@RequestBody(required = false) ViewStatsReqDto reqDto) {
+    public ResponseEntity<Response<String>> syncTotalViews(@RequestBody(required = false) @Valid ViewStatsReqDto reqDto) {
         viewStatsService.syncTotalViews(reqDto);
         return Response.success(ResponseCode.OK_SUCCESS);
     }
@@ -98,7 +99,7 @@ public class StatsJobController {
             @ApiResponse(responseCode = "500", description = "예상치 못한 서버 에러 발생", content = @Content(schema = @Schema(implementation = ResponseCode.class)))
     })
     @PostMapping("/views/raw")
-    public ResponseEntity<Response<String>> collectViewRawLogs(@RequestBody ViewRawLogReqDto reqDto) {
+    public ResponseEntity<Response<String>> collectViewRawLogs(@RequestBody @Valid ViewRawLogReqDto reqDto) {
         viewStatsService.collectViewRawLogs(reqDto.getStartDate(), reqDto.getEndDate());
         return Response.success(ResponseCode.OK_SUCCESS);
     }

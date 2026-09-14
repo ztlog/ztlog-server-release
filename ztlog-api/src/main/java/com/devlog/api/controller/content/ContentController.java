@@ -3,6 +3,7 @@ package com.devlog.api.controller.content;
 import com.devlog.api.service.content.ContentService;
 import com.devlog.api.service.content.dto.ContentResDto;
 import com.devlog.api.service.content.dto.ContentListResDto;
+import com.devlog.core.common.constants.CommonConstants;
 import com.devlog.core.common.enumulation.ResponseCode;
 import com.devlog.core.common.dto.Response;
 import com.devlog.core.common.enumulation.SearchType;
@@ -12,14 +13,17 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "컨텐츠 컨트롤러", description = "컨텐츠 컨트롤러")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/v1")
+@Validated
 public class ContentController {
 
     private final ContentService contentService;
@@ -74,7 +78,7 @@ public class ContentController {
     @GetMapping("/contents/search")
     public ResponseEntity<Response<ContentListResDto>> searchContentList(
             @RequestParam(value = "type") SearchType type,
-            @RequestParam(value = "param") String param,
+            @RequestParam(value = "param") @Size(max = CommonConstants.SEARCH_PARAM_MAX_SIZE, message = "검색어는 " + CommonConstants.SEARCH_PARAM_MAX_SIZE + "자를 초과할 수 없습니다.") String param,
             @RequestParam(value = "page", defaultValue = "1") Integer page
     ) {
         return Response.success(ResponseCode.OK_SUCCESS, contentService.searchContentList(type, param, page));
