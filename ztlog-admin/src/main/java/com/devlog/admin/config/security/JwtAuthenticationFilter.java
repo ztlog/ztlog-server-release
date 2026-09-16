@@ -6,6 +6,7 @@ import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,9 +44,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         String refreshToken = request.getHeader(CommonConstants.REFRESH_HEADER);
                         String reissuedUserId = tokenUtils.getUserIdFromToken(refreshToken);
 
+                        // reissue()가 response에 세팅한 새 액세스 토큰을 이번 요청에도 반영해
+                        // 이후 getUserIdFromHeader(request)가 만료된 옛 토큰을 다시 읽지 않도록 한다.
+                        String reissuedAuthHeader = response.getHeader(CommonConstants.AUTHORIZATION_HEADER);
+                        HttpServletRequest reissuedRequest = new HttpServletRequestWrapper(request) {
+                            @Override
+                            public String getHeader(String name) {
+                                if (CommonConstants.AUTHORIZATION_HEADER.equalsIgnoreCase(name)) {
+                                    return reissuedAuthHeader;
+                                }
+                                return super.getHeader(name);
+                            }
+                        };
+
                         // 재발급된 정보로 즉시 인증 처리 후 필터 체인 통과 및 종료
-                        authenticate(reissuedUserId, request);
-                        filterChain.doFilter(request, response);
+                        authenticate(reissuedUserId, reissuedRequest);
+                        filterChain.doFilter(reissuedRequest, response);
                         return;
                     }
                 }
