@@ -31,7 +31,7 @@ ztlog-server-release/
 │   ├── entity/           # JPA 엔티티 (@MapsId, @EmbeddedId 구조)
 │   ├── repository/       # QueryDSL 기반 데이터 접근 계층
 │   └── common/           # 공통 유틸리티, 예외 계층, 응답 코드
-├── ztlog-admin/          # 관리자 서비스 (Port: 8080, context: /admin)
+├── ztlog-admin/          # 관리자 서비스 (Port: 8089, context: /admin)
 │   ├── controller/       # 게시글 등록/수정/삭제 및 파일 관리
 │   ├── mapper/           # MyBatis 기반 통계/대시보드 쿼리
 │   └── config/security/  # JWT 인증 및 권한 제어
@@ -80,7 +80,7 @@ controller → service → repository (core) → entity (core)
 ./gradlew :ztlog-core:build
 
 # 서버 실행
-./gradlew :ztlog-admin:bootRun   # 관리자 서비스 (8080)
+./gradlew :ztlog-admin:bootRun   # 관리자 서비스 (8089)
 ./gradlew :ztlog-api:bootRun     # 사용자 서비스 (8086)
 
 # 테스트
@@ -109,7 +109,7 @@ controller → service → repository (core) → entity (core)
 
 | 서비스 | URL |
 | --- | --- |
-| Admin Swagger UI | `http://localhost:8080/admin/swagger-ui/index.html` |
+| Admin Swagger UI | `http://localhost:8089/admin/swagger-ui/index.html` |
 | Front Swagger UI | `http://localhost:8086/front/swagger-ui/index.html` |
 
 > 전체 엔드포인트 목록 → [docs/API-LIST.md](docs/API-LIST.md)
