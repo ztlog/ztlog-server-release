@@ -1,0 +1,10 @@
+package com.devlog.core.repository.content;
+
+import com.devlog.core.entity.content.ContentDraftTag;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface ContentDraftTagRepository extends JpaRepository<ContentDraftTag, Long> {
+
+}
