@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.devlog.admin.mapper.content.ContentDraftMapper">
+
+    <resultMap id="ContentDraftListMap" type="ContentDraftResDto">
+        <result column="DRAFT_NO" property="draftNo"/>
+        <result column="CTNT_NO" property="ctntNo"/>
+        <result column="ORIGIN_TITLE" property="originTitle"/>
+        <result column="CTNT_TITLE" property="title"/>
+        <result column="CTNT_SUBTITLE" property="subTitle"/>
+        <result column="CATE_NO" property="cateNo"/>
+        <result column="CTNT_PATH" property="path"/>
+        <result column="CTNT_NAME" property="name"/>
+        <result column="CTNT_EXT" property="ext"/>
+        <result column="INP_USER" property="inpUser"/>
+        <result column="INP_DTTM" property="inpDttm"/>
+        <result column="UPD_DTTM" property="updDttm"/>
+
+        <collection property="tags" ofType="TagInfoReqDto">
+            <result column="TAG_NO" property="tagNo"/>
+            <result column="TAG_NAME" property="tagName"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="ContentDraftMap" type="ContentDraftResDto">
+        <result column="DRAFT_NO" property="draftNo"/>
+        <result column="CTNT_NO" property="ctntNo"/>
+        <result column="ORIGIN_TITLE" property="originTitle"/>
+        <result column="CTNT_TITLE" property="title"/>
+        <result column="CTNT_SUBTITLE" property="subTitle"/>
+        <result column="CTNT_BODY" property="body"/>
+        <result column="CATE_NO" property="cateNo"/>
+        <result column="CTNT_PATH" property="path"/>
+        <result column="CTNT_NAME" property="name"/>
+        <result column="CTNT_EXT" property="ext"/>
+        <result column="INP_USER" property="inpUser"/>
+        <result column="INP_DTTM" property="inpDttm"/>
+        <result column="UPD_DTTM" property="updDttm"/>
+
+        <collection property="tags" ofType="TagInfoReqDto">
+            <result column="TAG_NO" property="tagNo"/>
+            <result column="TAG_NAME" property="tagName"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectCountDraftList" resultType="integer">
+        select
+            count(cd.DRAFT_NO)
+        from contents_draft cd
+        where 1=1
+        <choose>
+            <when test="type.name() == 'NEW'">
+                and cd.CTNT_NO is null
+            </when>
+            <when test="type.name() == 'EDIT'">
+                and cd.CTNT_NO is not null
+            </when>
+        </choose>
+    </select>
+
+    <select id="selectDraftList" resultMap="ContentDraftListMap">
+        select
+            cd.DRAFT_NO,
+            cd.CTNT_NO,
+            cm.CTNT_TITLE as ORIGIN_TITLE,
+            cd.CTNT_TITLE,
+            cd.CTNT_SUBTITLE,
+            cd.CATE_NO,
+            cd.CTNT_PATH,
+            cd.CTNT_NAME,
+            cd.CTNT_EXT,
+            cd.INP_USER,
+            cdt.TAG_NO,
+            cdt.TAG_NAME,
+            cd.INP_DTTM,
+            cd.UPD_DTTM
+        from contents_draft cd
+                 left join contents_mst cm on cd.CTNT_NO = cm.CTNT_NO and cm.DELETED_YN = 'N'
+                 left join contents_draft_tags cdt on cd.DRAFT_NO = cdt.DRAFT_NO
+        where 1=1
+        <choose>
+            <when test="type.name() == 'NEW'">
+                and cd.CTNT_NO is null
+            </when>
+            <when test="type.name() == 'EDIT'">
+                and cd.CTNT_NO is not null
+            </when>
+        </choose>
+        order by cd.DRAFT_NO desc, cdt.DRAFT_TAG_NO
+    </select>
+
+    <select id="selectDraft" resultMap="ContentDraftMap">
+        select
+            cd.DRAFT_NO,
+            cd.CTNT_NO,
+            cm.CTNT_TITLE as ORIGIN_TITLE,
+            cd.CTNT_TITLE,
+            cd.CTNT_SUBTITLE,
+            cd.CTNT_BODY,
+            cd.CATE_NO,
+            cd.CTNT_PATH,
+            cd.CTNT_NAME,
+            cd.CTNT_EXT,
+            cd.INP_USER,
+            cdt.TAG_NO,
+            cdt.TAG_NAME,
+            cd.INP_DTTM,
+            cd.UPD_DTTM
+        from contents_draft cd
+                 left join contents_mst cm on cd.CTNT_NO = cm.CTNT_NO and cm.DELETED_YN = 'N'
+                 left join contents_draft_tags cdt on cd.DRAFT_NO = cdt.DRAFT_NO
+        where cd.DRAFT_NO = #{draftNo}
+        order by cdt.DRAFT_TAG_NO
+    </select>
+
+</mapper>
