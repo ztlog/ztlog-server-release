@@ -74,18 +74,25 @@
             cdt.TAG_NAME,
             cd.INP_DTTM,
             cd.UPD_DTTM
-        from contents_draft cd
+        <!-- 태그 JOIN 결과를 RowBounds로 자르면 offset이 태그 행 단위로 계산돼 페이지가 겹치므로, 초안을 먼저 페이징한 뒤 태그를 붙인다 -->
+        from (
+                 select DRAFT_NO, CTNT_NO, CTNT_TITLE, CTNT_SUBTITLE, CATE_NO, CTNT_PATH, CTNT_NAME, CTNT_EXT,
+                        INP_USER, INP_DTTM, UPD_DTTM
+                 from contents_draft
+                 where 1=1
+                 <choose>
+                     <when test="type.name() == 'NEW'">
+                         and CTNT_NO is null
+                     </when>
+                     <when test="type.name() == 'EDIT'">
+                         and CTNT_NO is not null
+                     </when>
+                 </choose>
+                 order by DRAFT_NO desc
+                 limit #{limit} offset #{offset}
+             ) cd
                  left join contents_mst cm on cd.CTNT_NO = cm.CTNT_NO and cm.DELETED_YN = 'N'
                  left join contents_draft_tags cdt on cd.DRAFT_NO = cdt.DRAFT_NO
-        where 1=1
-        <choose>
-            <when test="type.name() == 'NEW'">
-                and cd.CTNT_NO is null
-            </when>
-            <when test="type.name() == 'EDIT'">
-                and cd.CTNT_NO is not null
-            </when>
-        </choose>
         order by cd.DRAFT_NO desc, cdt.DRAFT_TAG_NO
     </select>
 

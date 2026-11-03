@@ -121,4 +121,23 @@ public class ContentDraftController {
         return Response.success(ResponseCode.OK_SUCCESS);
     }
 
+    /**
+     * 초안 발행하기
+     *
+     * @param request HTTP 요청 객체
+     * @param draftNo 초안 번호
+     * @return 성공 응답
+     */
+    @Operation(summary = "초안 발행", description = "초안 발행 (ctntNo 없으면 신규 글 발행, 있으면 기존 발행글 덮어쓰기. 발행 후 초안 삭제)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공", content = @Content(schema = @Schema(implementation = ResponseCode.class))),
+            @ApiResponse(responseCode = "400", description = "필수값 누락 또는 존재하지 않는 리소스 접근", content = @Content(schema = @Schema(implementation = ResponseCode.class))),
+            @ApiResponse(responseCode = "500", description = "예상치 못한 서버 에러 발생", content = @Content(schema = @Schema(implementation = ResponseCode.class)))
+    })
+    @PostMapping("/{draftNo}/publish")
+    public ResponseEntity<Response<String>> publishDraft(HttpServletRequest request, @PathVariable Long draftNo) {
+        contentDraftService.publish(request, draftNo);
+        return Response.success(ResponseCode.CREATED_SUCCESS);
+    }
+
 }
