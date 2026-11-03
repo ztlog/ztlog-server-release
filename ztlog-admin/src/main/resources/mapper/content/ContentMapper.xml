@@ -50,10 +50,15 @@
             tm.TAG_NAME,
             cm.INP_DTTM,
             cm.UPD_DTTM
-        from contents_mst cm
+        <!-- 태그 JOIN 결과를 RowBounds로 자르면 offset이 태그 행 단위로 계산돼 페이지가 겹치므로, 게시물을 먼저 페이징한 뒤 태그를 붙인다 -->
+        from (
+                 select CTNT_NO, CTNT_TITLE, CTNT_SUBTITLE, INP_USER, DELETED_YN, INP_DTTM, UPD_DTTM
+                 from contents_mst
+                 order by CTNT_NO desc
+                 limit #{limit} offset #{offset}
+             ) cm
                  left join contents_tags ct on cm.CTNT_NO = ct.CTNT_NO
                  left join tags_mst tm on ct.TAG_NO = tm.TAG_NO
-        where 1=1
         order by cm.CTNT_NO desc, tm.TAG_NO
     </select>
 
@@ -115,28 +120,38 @@
             tm.TAG_NAME,
             cm.INP_DTTM,
             cm.UPD_DTTM
-        from contents_mst cm
+        <!-- 검색 조건으로 게시물을 먼저 페이징한 뒤 태그를 붙인다 (태그 검색도 EXISTS로 걸러서 매칭된 게시물의 태그는 전부 내려감) -->
+        from (
+                 select cm.CTNT_NO, cm.CTNT_TITLE, cm.CTNT_SUBTITLE, cm.INP_USER, cm.DELETED_YN, cm.INP_DTTM, cm.UPD_DTTM
+                 from contents_mst cm
                  <if test="type.name() == 'CONTENT' or type.name() == 'TITLE_CONTENT'">
                      inner join contents_dtl cd on cm.CTNT_NO = cd.CTNT_NO
                  </if>
+                 where 1=1
+                 <choose>
+                     <when test="type.name() == 'TITLE'">
+                         and cm.CTNT_TITLE like concat('%', #{param}, '%')
+                     </when>
+                     <when test="type.name() == 'CONTENT'">
+                         and cd.CTNT_BODY like concat('%', #{param}, '%')
+                     </when>
+                     <when test="type.name() == 'TITLE_CONTENT'">
+                         and (cm.CTNT_TITLE like concat('%', #{param}, '%')
+                             or cd.CTNT_BODY like concat('%', #{param}, '%'))
+                     </when>
+                     <when test="type.name() == 'TAG'">
+                         and exists (select 1
+                                     from contents_tags sct
+                                              inner join tags_mst stm on sct.TAG_NO = stm.TAG_NO
+                                     where sct.CTNT_NO = cm.CTNT_NO
+                                       and stm.TAG_NAME like concat('%', #{param}, '%'))
+                     </when>
+                 </choose>
+                 order by cm.CTNT_NO desc
+                 limit #{limit} offset #{offset}
+             ) cm
                  left join contents_tags ct on cm.CTNT_NO = ct.CTNT_NO
                  left join tags_mst tm on ct.TAG_NO = tm.TAG_NO
-        where 1=1
-        <choose>
-            <when test="type.name() == 'TITLE'">
-                and cm.CTNT_TITLE like concat('%', #{param}, '%')
-            </when>
-            <when test="type.name() == 'CONTENT'">
-                and cd.CTNT_BODY like concat('%', #{param}, '%')
-            </when>
-            <when test="type.name() == 'TITLE_CONTENT'">
-                and (cm.CTNT_TITLE like concat('%', #{param}, '%')
-                    or cd.CTNT_BODY like concat('%', #{param}, '%'))
-            </when>
-            <when test="type.name() == 'TAG'">
-                and tm.TAG_NAME like concat('%', #{param}, '%')
-            </when>
-        </choose>
         order by cm.CTNT_NO desc, tm.TAG_NO
     </select>
 

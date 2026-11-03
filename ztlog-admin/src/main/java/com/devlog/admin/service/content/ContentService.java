@@ -63,7 +63,7 @@ public class ContentService {
     public ContentListResDto getContentList(Integer page) {
         RowBounds rowBounds = pageUtils.getRowBounds(page);
         Integer totalCount = contentMapper.selectCountContentList();
-        List<ContentResDto> contentList = contentMapper.selectContentList(rowBounds);
+        List<ContentResDto> contentList = contentMapper.selectContentList(rowBounds.getOffset(), rowBounds.getLimit());
         return ContentListResDto.of(contentList, page, totalCount);
     }
 
@@ -190,7 +190,7 @@ public class ContentService {
     public ContentListResDto searchContentList(SearchType type, String param, Integer page) {
         RowBounds rowBounds = pageUtils.getRowBounds(page);
         Integer totalCount = contentMapper.selectCountSearchContentList(type, param);
-        List<ContentResDto> list = contentMapper.selectSearchContentList(type, param, rowBounds);
+        List<ContentResDto> list = contentMapper.selectSearchContentList(type, param, rowBounds.getOffset(), rowBounds.getLimit());
         return ContentListResDto.of(list, page, totalCount);
     }
 }
