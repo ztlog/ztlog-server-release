@@ -1,6 +1,8 @@
 package com.devlog.admin.service.content.draft;
 
 import com.devlog.core.config.exception.DataNotFoundException;
+import com.devlog.core.config.exception.ValidationException;
+import com.devlog.core.entity.content.Content;
 import com.devlog.core.entity.content.ContentDraft;
 import com.devlog.core.entity.tag.Tag;
 import org.junit.jupiter.api.DisplayName;
@@ -76,6 +78,29 @@ class ContentDraftCreateTest extends ContentDraftIntegrationTestSupport {
         assertThatThrownBy(() -> contentDraftService.createDraft(request,
                 draftReq(null, Long.MAX_VALUE, "t-" + uid, null, null, null)))
                 .isInstanceOf(DataNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("같은 글의 수정 초안이 이미 있으면 ValidationException이고 초안은 하나만 남는다")
+    void createDuplicateEditDraft() {
+        Content origin = savePublishedContent("origin-" + uid, List.of());
+        createDraft(draftReq(null, origin.getCtntNo(), "edit-1-" + uid, null, null, null));
+        flushAndClear();
+
+        assertThatThrownBy(() -> contentDraftService.createDraft(request,
+                draftReq(null, origin.getCtntNo(), "edit-2-" + uid, null, null, null)))
+                .isInstanceOf(ValidationException.class);
+        assertThat(countDraftsByTitleSuffix(uid)).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("신규 글 초안은 여러 개 만들 수 있다")
+    void createMultipleNewDrafts() {
+        createDraft(draftReq(null, null, "new-1-" + uid, null, null, null));
+        createDraft(draftReq(null, null, "new-2-" + uid, null, null, null));
+        flushAndClear();
+
+        assertThat(countDraftsByTitleSuffix(uid)).isEqualTo(2);
     }
 
     @Test

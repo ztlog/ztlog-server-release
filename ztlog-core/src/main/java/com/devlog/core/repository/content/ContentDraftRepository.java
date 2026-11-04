@@ -7,4 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ContentDraftRepository extends JpaRepository<ContentDraft, Long> {
 
+    boolean existsByCtntNo(Long ctntNo);
+
 }
