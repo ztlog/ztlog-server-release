@@ -97,8 +97,14 @@ public class ContentDraftService {
         String userId = tokenUtils.getUserIdFromHeader(request);
 
         // 발행글 수정 초안이면 원본이 실제로 있는지 확인 (없는 ctntNo로 만든 초안은 발행이 불가능함)
-        if (!Objects.isNull(reqDto.getCtntNo()) && !contentRepository.existsById(reqDto.getCtntNo())) {
-            throw new DataNotFoundException(ResponseCode.NOT_FOUND_DATA.getMessage());
+        if (!Objects.isNull(reqDto.getCtntNo())) {
+            if (!contentRepository.existsById(reqDto.getCtntNo())) {
+                throw new DataNotFoundException(ResponseCode.NOT_FOUND_DATA.getMessage());
+            }
+            // 같은 글의 수정 초안이 여러 개면 나중에 발행한 쪽이 앞의 발행을 덮어쓰므로 글당 하나만 허용 — 기존 초안은 PUT으로 수정
+            if (contentDraftRepository.existsByCtntNo(reqDto.getCtntNo())) {
+                throw new ValidationException("이미 수정 중인 초안이 있습니다.");
+            }
         }
         Category category = findCategoryOrThrow(reqDto.getCateNo());
 

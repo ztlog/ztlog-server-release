@@ -39,7 +39,11 @@ import java.util.UUID;
  * 서비스 메서드 하나 = 실제 요청 하나이므로, 단계 사이에는 {@link #flushAndClear()}로 영속성 컨텍스트를 비워
  * 다음 단계가 DB에 저장된 상태를 다시 읽도록 한다. (MyBatis 매퍼 조회도 flush 이후에만 JPA 변경분을 본다)
  */
-@SpringBootTest
+// 초안 테스트는 S3를 쓰지 않지만 S3Client 빈 생성에 키가 필요하므로, 환경변수(AWS_ACCESS_KEY/AWS_SECRET_KEY) 없이도 뜨도록 더미값 지정
+@SpringBootTest(properties = {
+        "aws.credentials.access-key=test-access-key",
+        "aws.credentials.secret-key=test-secret-key"
+})
 @ActiveProfiles("local")
 @Transactional
 abstract class ContentDraftIntegrationTestSupport {
@@ -161,6 +165,11 @@ abstract class ContentDraftIntegrationTestSupport {
 
     protected int countDraftTags(Long draftNo) {
         return jdbcTemplate.queryForObject("select count(*) from contents_draft_tags where DRAFT_NO = ?", Integer.class, draftNo);
+    }
+
+    protected int countDraftsByType(ContentDraftType type) {
+        String condition = type == ContentDraftType.NEW ? "CTNT_NO is null" : "CTNT_NO is not null";
+        return jdbcTemplate.queryForObject("select count(*) from contents_draft where " + condition, Integer.class);
     }
 
     protected int countDraftsByTitleSuffix(String suffix) {

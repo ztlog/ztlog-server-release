@@ -39,6 +39,7 @@ public class ContentDraft extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "drafts", fetch = FetchType.EAGER)
     @OrderBy("sort asc")
+    @Builder.Default
     private List<ContentDraftTag> draftTags = new ArrayList<>();
 
     @Column(name = "CTNT_PATH")

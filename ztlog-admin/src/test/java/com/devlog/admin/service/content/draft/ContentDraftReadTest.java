@@ -38,14 +38,19 @@ class ContentDraftReadTest extends ContentDraftIntegrationTestSupport {
     @Test
     @DisplayName("목록 totalCount는 type별 실제 초안 수와 같다")
     void listTotalCountMatchesType() {
-        Integer before = contentDraftService.getDraftList(ContentDraftType.NEW, 1).getTotalCount();
-
+        Content origin = savePublishedContent("origin-" + uid, List.of());
         createDraft(draftReq(null, null, "new1-" + uid, null, null, List.of()));
         createDraft(draftReq(null, null, "new2-" + uid, null, null, List.of()));
+        createDraft(draftReq(null, origin.getCtntNo(), "edit-" + uid, null, null, List.of()));
         flushAndClear();
 
-        ContentDraftListResDto result = contentDraftService.getDraftList(ContentDraftType.NEW, 1);
-        assertThat(result.getTotalCount()).isEqualTo(before + 2);
+        // 같은 트랜잭션에서 같은 파라미터로 매퍼를 두 번 부르면 MyBatis 로컬 캐시가 이전 결과를 돌려주므로,
+        // 기준값은 JDBC로 직접 세고 서비스는 type별로 한 번씩만 호출한다
+        ContentDraftListResDto newResult = contentDraftService.getDraftList(ContentDraftType.NEW, 1);
+        ContentDraftListResDto editResult = contentDraftService.getDraftList(ContentDraftType.EDIT, 1);
+
+        assertThat(newResult.getTotalCount()).isEqualTo(countDraftsByType(ContentDraftType.NEW)).isGreaterThanOrEqualTo(2);
+        assertThat(editResult.getTotalCount()).isEqualTo(countDraftsByType(ContentDraftType.EDIT)).isGreaterThanOrEqualTo(1);
     }
 
     @Test
