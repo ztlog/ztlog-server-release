@@ -36,6 +36,22 @@
 
 ---
 
+### 컨텐츠 초안 (`/api/v1/contents/drafts`)
+
+| 메서드 | 경로 | 인증 | 설명 |
+|---|---|---|---|
+| `GET` | `/api/v1/contents/drafts` | 🔒 | 초안 목록 조회 (`?type=NEW\|EDIT&page=1`) |
+| `GET` | `/api/v1/contents/drafts/{draftNo}` | 🔒 | 초안 상세 조회 |
+| `POST` | `/api/v1/contents/drafts` | 🔒 | 초안 생성 (임시저장) — `ctntNo` 없으면 신규 글 초안, 있으면 발행글 수정 초안 (글당 수정 초안 1개, 이미 있으면 400) |
+| `PUT` | `/api/v1/contents/drafts` | 🔒 | 초안 수정 (같은 `draftNo`로 덮어쓰기) |
+| `DELETE` | `/api/v1/contents/drafts/{draftNo}` | 🔒 | 초안 삭제 (물리 삭제) |
+| `POST` | `/api/v1/contents/drafts/{draftNo}/publish` | 🔒 | 초안 발행 — `ctntNo` 없으면 신규 발행, 있으면 기존 글 덮어쓰기. 발행 후 초안 삭제 |
+
+**초안 유형 (`type`)**: `NEW` (신규 글 초안) / `EDIT` (발행글 수정 초안)  
+초안 저장 시 필수값 검증 없음(미완성 저장 허용). 발행 시 제목·본문·카테고리 필수. 새 태그명은 발행 시점에 생성됨.
+
+---
+
 ### 카테고리 (`/api/v1/categories`)
 
 | 메서드 | 경로 | 인증 | 설명 |

@@ -39,6 +39,7 @@ public class Content extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "contents", fetch = FetchType.EAGER)
     @OrderBy("sort asc")
+    @Builder.Default
     private List<ContentTag> contentTags = new ArrayList<>();
 
     @Column(name = "INP_USER", nullable = false)
